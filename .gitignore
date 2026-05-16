@@ -1,4 +1,22 @@
-# Compiled class file
+# Carpetas de compilación y salida (Eclipse / Java)
+bin/
+out/
+*.class
+
+# Archivos de configuración local de Eclipse (Evita conflictos de entorno)
+.classpath
+.project
+.settings/
+
+# Archivos de empaquetado y logs
+*.jar
+*.war
+*.zip
+*.log
+
+# Archivos temporales
+.mtj.tmp/
+*.ctxt# Compiled class file
 *.class
 
 # Log file
@@ -18,12 +36,15 @@
 *.zip
 *.tar.gz
 *.rar
+<<<<<<< HEAD
 # Archivos que no se pueden subir
 bin/
 out/
 .classpath
 .project
 .settings/
+=======
+>>>>>>> 7315e745d0900254c32c03d4c552b1f2cdd7534c
 
 # virtual machine crash logs, see http://www.java.com/en/download/help/error_hotspot.xml
 hs_err_pid*
