@@ -1,0 +1,6 @@
+codigo,titulo,tipo,autor,año,cantidad,disponible
+08,El chef,Libro,Marcos,2007,0,false
+07,Iron Man,Libro,Tony,2015,18,true
+06,El cielo,Revista,,,8,true
+05,Invincible,Revista,,,14,true
+09,America,Revista,,,4,true

@@ -14,7 +14,7 @@ public class MaterialPanel extends JPanel {
     private MainFrame frame;
     private JTable tabla;
     private DefaultTableModel modelo;
-    private JTextField txtCodigo, txtTitulo, txtAutor, txtAño;
+    private JTextField txtCodigo, txtTitulo, txtAutor, txtAño, txtCantidad;
     private JComboBox<String> cmbTipo;
     private JButton btnAgregar, btnEliminar, btnLimpiar;
 
@@ -23,7 +23,7 @@ public class MaterialPanel extends JPanel {
         setLayout(new BorderLayout(10, 10));
         setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
 
-        String[] columnas = {"Codigo", "Titulo", "Tipo", "Autor", "Anio", "Disp."};
+        String[] columnas = {"Codigo", "Titulo", "Tipo", "Autor", "Anio", "Cantidad", "Disp."};
         modelo = new DefaultTableModel(columnas, 0) {
             @Override public boolean isCellEditable(int row, int col) { return false; }
         };
@@ -38,12 +38,14 @@ public class MaterialPanel extends JPanel {
         labels.add(new JLabel("Tipo:"));
         labels.add(new JLabel("Autor:"));
         labels.add(new JLabel("Anio:"));
+        labels.add(new JLabel("Cantidad:"));
 
         txtCodigo = new JTextField(15);
         txtTitulo = new JTextField(15);
         cmbTipo = new JComboBox<>(new String[]{"Libro", "Revista"});
         txtAutor = new JTextField(15);
         txtAño = new JTextField(15);
+        txtCantidad = new JTextField("1");
         
         cmbTipo.addActionListener(e -> {
             boolean esLibro = cmbTipo.getSelectedItem().equals("Libro");
@@ -58,6 +60,7 @@ public class MaterialPanel extends JPanel {
         fields.add(cmbTipo);
         fields.add(txtAutor);
         fields.add(txtAño);
+        fields.add(txtCantidad);
 
         btnAgregar = new JButton("Agregar");
         btnEliminar = new JButton("Eliminar");
@@ -85,9 +88,15 @@ public class MaterialPanel extends JPanel {
         try {
             String codigo = txtCodigo.getText().trim();
             String titulo = txtTitulo.getText().trim();
+            int cantidad = Integer.parseInt(txtCantidad.getText().trim());
             
             if (codigo.isEmpty() || titulo.isEmpty()) {
                 JOptionPane.showMessageDialog(this, "Codigo y titulo son obligatorios");
+                return;
+            }
+            
+            if (cantidad < 1) {
+                JOptionPane.showMessageDialog(this, "Cantidad debe ser al menos 1");
                 return;
             }
             
@@ -101,9 +110,9 @@ public class MaterialPanel extends JPanel {
             if (cmbTipo.getSelectedItem().equals("Libro")) {
                 String autor = txtAutor.getText().trim();
                 int año = txtAño.getText().trim().isEmpty() ? 2024 : Integer.parseInt(txtAño.getText().trim());
-                m = new Libro(codigo, titulo, true, autor, año);
+                m = new Libro(codigo, titulo, true, autor, año, cantidad);
             } else {
-                m = new Revista(codigo, titulo, true, 1);
+                m = new Revista(codigo, titulo, true, 1, cantidad);
             }
             
             bib.agregarMaterial(m);
@@ -111,7 +120,7 @@ public class MaterialPanel extends JPanel {
             limpiar();
             JOptionPane.showMessageDialog(this, "Material agregado");
         } catch (NumberFormatException ex) {
-            JOptionPane.showMessageDialog(this, "Ano debe ser numerico");
+            JOptionPane.showMessageDialog(this, "Anio y cantidad deben ser numericos");
         }
     }
 
@@ -122,8 +131,8 @@ public class MaterialPanel extends JPanel {
             Biblioteca bib = frame.getBiblioteca();
             Material m = bib.buscarMaterial(codigo);
             
-            if (m != null && !m.isDisponible()) {
-                JOptionPane.showMessageDialog(this, "No se puede eliminar: esta prestado");
+            if (m != null && m.getCantidad() < (m.isDisponible() ? 1 : 0)) {
+                JOptionPane.showMessageDialog(this, "No se puede eliminar: hay copias prestadas");
                 return;
             }
             
@@ -140,6 +149,7 @@ public class MaterialPanel extends JPanel {
         txtTitulo.setText("");
         txtAutor.setText("");
         txtAño.setText("");
+        txtCantidad.setText("1");
         cmbTipo.setSelectedIndex(0);
     }
 
@@ -150,6 +160,7 @@ public class MaterialPanel extends JPanel {
                 m.getID(), m.getTitulo(), m.getClass().getSimpleName(),
                 (m instanceof Libro) ? ((Libro)m).getAutor() : "",
                 (m instanceof Libro) ? ((Libro)m).getAño() : "",
+                m.getCantidad(),
                 m.isDisponible() ? "Si" : "No"
             });
         }
