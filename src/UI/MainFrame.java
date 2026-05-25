@@ -1,6 +1,8 @@
 package UI;
 
 import javax.swing.*;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
 import java.awt.event.*;
 import Servicio.Biblioteca;
 import Persistencia.Archivo;
@@ -12,6 +14,9 @@ public class MainFrame extends JFrame {
     private MaterialPanel panelMateriales;
     private UsuarioPanel panelUsuarios;
     private PrestamoPanel panelPrestamos;
+    
+    // Varible de control para evitar bucles infinitos al reemplazar componentes
+    private boolean actualizandoPestana = false;
 
     public MainFrame() {
         biblioteca = new Biblioteca();
@@ -53,6 +58,34 @@ public class MainFrame extends JFrame {
         pestanas.addTab("Materiales", panelMateriales);
         pestanas.addTab("Usuarios", panelUsuarios);
         pestanas.addTab("Prestamos", panelPrestamos);
+
+        pestanas.addChangeListener(new ChangeListener() {
+            @Override
+            public void stateChanged(ChangeEvent e) {
+
+                if (actualizandoPestana) return;
+                
+                int pestañaSeleccionada = pestanas.getSelectedIndex();
+                if (pestañaSeleccionada == -1) return;
+                
+                actualizandoPestana = true;
+                
+                if (pestañaSeleccionada == 0) { 
+                    panelMateriales = new MaterialPanel(MainFrame.this);
+                    pestanas.setComponentAt(0, panelMateriales);
+                } 
+                else if (pestañaSeleccionada == 1) { 
+                    panelUsuarios = new UsuarioPanel(MainFrame.this);
+                    pestanas.setComponentAt(1, panelUsuarios);
+                } 
+                else if (pestañaSeleccionada == 2) { 
+                    panelPrestamos = new PrestamoPanel(MainFrame.this);
+                    pestanas.setComponentAt(2, panelPrestamos);
+                }
+                
+                actualizandoPestana = false;
+            }
+        });
         
         add(pestanas);
         
